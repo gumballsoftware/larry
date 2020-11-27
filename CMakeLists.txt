@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 3.17)
+project(larry)
+find_package(cpprestsdk REQUIRED)
+
+include_directories(include)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+add_executable(larry main.cpp)
+target_link_libraries(larry ${CMAKE_DL_LIBS})
+target_link_libraries(larry cpprestsdk::cpprest)
