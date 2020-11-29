@@ -22,10 +22,9 @@ std::string postJSON(std::string body, std::string base, std::string path)
 
     if(curl) {
         struct curl_slist *headers = NULL;
-
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
-
         headers = curl_slist_append(headers, "Content-Type: application/json");
+        headers = curl_slist_append(headers, "Expect: ");
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
         curl_easy_setopt(curl, CURLOPT_URL, (base+path).c_str());
@@ -50,15 +49,12 @@ int putJSON(std::string body, std::string base, std::string path, std::string to
 
     if(curl) {
         struct curl_slist *headers = NULL;
-
-        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
         headers = curl_slist_append(headers, "Content-Type: application/json");
+        headers = curl_slist_append(headers, "Expect: ");
         headers = curl_slist_append(headers, auth.c_str());
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
         curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
         curl_easy_setopt(curl, CURLOPT_URL, (base+path).c_str());
 
         res = curl_easy_perform(curl);
