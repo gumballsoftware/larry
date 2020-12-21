@@ -1,0 +1,24 @@
+//  To parse this JSON data, first install
+//
+//      json.hpp  https://github.com/nlohmann/json
+//
+//  Then include this file, and then do
+//
+//     stdout data = nlohmann::json::parse(jsonString);
+
+#pragma once
+
+#include "json.hpp"
+#include "helper.hpp"
+
+#include "Actions.hpp"
+#include "ThingLink.hpp"
+#include "ColorLink.hpp"
+#include "Color.hpp"
+#include "On.hpp"
+#include "Properties.hpp"
+#include "Oauth2Sc.hpp"
+#include "SecurityDefinitions.hpp"
+#include "Thing.hpp"
+namespace webthings {
+}

@@ -16,9 +16,9 @@ endif()
 
 find_package(cpprestsdk REQUIRED)
 
-include_directories(include)
+include_directories(src)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -lcurl")
-add_executable(larry main.cpp)
+add_executable(larry src/main.cpp)
 target_link_libraries(larry ${CMAKE_DL_LIBS})
 target_link_libraries(larry PRIVATE nlohmann_json::nlohmann_json)

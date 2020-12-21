@@ -1,0 +1,20 @@
+strip1 = 'led_1';
+strip2 = 'led_2';
+red = '#ff0000';
+green = '#00ff00';
+strip1Color = red;
+strip2Color = green;
+interval = 100;
+
+setColor(strip1, red);
+setColor(strip2, green);
+
+while (nightime) {
+   sleep(interval)
+   setColor(strip1, strip1Color);
+   setColoer(string2, strip2Color);
+   old2 = strip2Color;
+   strip12Color = strip1Color;
+   strip1Color = old2;
+}
+

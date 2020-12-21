@@ -6,7 +6,37 @@
 using json = nlohmann::json;
 
 CURL *curl;
-std::string JWT;
+
+
+struct _URLs {
+    std::string JWT;
+    std::string baseURL = "http://192.168.0.197:8080";
+    std::string _thingPath = "/things/";
+    std::string _colorPath = "/properties/color";
+    std::map<std::string,std::string> idsByName;
+
+    void addThing(std::string name, std::string id) {
+        idsByName[name] = id;
+    }
+
+    bool hasName(std::string name) {
+        std::map<std::string, std::string>::iterator it = idsByName.find(name);
+        return it != idsByName.end();
+    }
+
+    std::string thingsPath() {
+        return baseURL + _thingPath;
+    }
+
+    std::string thingPath(std::string name) {
+        std::map<std::string, std::string>::iterator it = idsByName.find(name);
+        return _thingPath + it->second;
+    }
+
+    std::string colorPath(std::string name) {
+        return baseURL + thingPath(name) + _colorPath;
+    }
+} URLs;
 
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 {
@@ -63,6 +93,30 @@ int putJSON(std::string body, std::string base, std::string path, std::string to
     return 0;
 }
 
+std::string getJSON(std::string path, std::string token)
+{
+    curl = curl_easy_init();
+
+    CURLcode res;
+    std::string readBuffer;
+    std::string auth = "Authorization: Bearer " + token;
+
+    if(curl) {
+        struct curl_slist *headers = NULL;
+        headers = curl_slist_append(headers, "Content-Type: application/json");
+        headers = curl_slist_append(headers, "Expect: ");
+        headers = curl_slist_append(headers, auth.c_str());
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
+        curl_easy_setopt(curl, CURLOPT_URL, (path).c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+    }
+    return readBuffer;
+}
+
 void login(std::string name, std::string pwd) {
     json login;
     login["email"] = name;
@@ -72,7 +126,22 @@ void login(std::string name, std::string pwd) {
                                "http://192.168.0.197:8080",
                                "/login/");
     auto j1 = json::parse(jwt);
-    JWT = j1["jwt"];
+    URLs.JWT = j1["jwt"];
+}
+
+void processThing(auto o) {
+
+}
+
+void getThings() {
+  std::string thingJSON = getJSON(URLs.thingsPath(), URLs.JWT);
+    auto j1 = json::parse(thingJSON);
+    if (j1.is_array()) {
+        for (int i=0; i<j1.size(); i++) {
+            processThing(j1[i]);
+        }
+    }
+    std::cout << thingJSON << std::endl;
 }
 
 int main(int argc, char** argv) {
@@ -84,10 +153,13 @@ int main(int argc, char** argv) {
     std::string userPass = argv[2];
     std::string color = argv[3];
     login(userName, userPass);
+    getThings();
+    /*
     json colorJ;
     colorJ["color"] = color;
     std::string body = colorJ.dump();
     std::string baseURL = "http://192.168.0.197:8080";
     std::string path = "/things/zb-84182600000b039a/properties/color";
     return putJSON(body, baseURL, path, JWT);
+     */
 }
